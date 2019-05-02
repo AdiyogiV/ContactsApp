@@ -1,5 +1,6 @@
 package task.abhinav;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 
 public class Info extends AppCompatActivity {
 
-    static String[] deets = {"","",""};
+    static String[] deets = {"","","",""};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class Info extends AppCompatActivity {
         TextView t1 = findViewById(R.id.ph);
         t1.setText("Phone : " + deets[1]);
         TextView t2 = findViewById(R.id.email);
-        t2.setText("Email : " + getEmail(id));
+        t2.setText("Email : " + deets[3]);
         TextView t3 = findViewById(R.id.id);
         t3.setText("Contact id : " + deets[2]);
 
@@ -101,25 +102,27 @@ public class Info extends AppCompatActivity {
 
         }
 
-        return stuff;
-    }
-
-
-    public String getEmail(String contactId){
-
-        String email = "";
-        Cursor emailCur = this.getContentResolver().query(
+        Cursor cursorn = context.getContentResolver().query(
                 ContactsContract.CommonDataKinds.Email.CONTENT_URI,
                 null,
-                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
-                new String[]{contactId}, null);
-        while (emailCur.moveToNext()) {
-            email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ? ", new String[] {stuff[2]}, null);
+
+        if (cursorn != null) {
+            try {
+                if (cursorn.moveToNext()) {
+                    stuff[3] = cursorn.getString(cursorn
+                            .getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.DATA));
+
+                }
+            } finally {
+
+                cursorn.close();
+            }
+
         }
-        return email;}
 
-
-
+        return stuff;
+    }
 
 
 
